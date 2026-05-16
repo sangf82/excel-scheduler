@@ -2,32 +2,35 @@
 
 ## Scope
 
-This project is the **MedMate Scheduler** plugin. Agents operating in this directory have **one job only**: schedule surgeries against the workbook at:
+This project is the **MedMate Scheduler** plugin. It operates on isolated scheduling projects in the user's `Documents` folder.
+The template file at `C:\projects\MedMate\excel-scheduler\scheduling-template.xlsx` is strictly a **Blueprint** and must NEVER be edited directly.
 
-```
-C:\projects\MedMate\excel-scheduler\scheduling-template.xlsx
-```
+### Active Workspace Concept
+By default, the agent must ensure there is an **Active Project File** (e.g., `C:\Users\sluon\Documents\MedMate_Schedules\[ProjectName]\schedule.xlsx`). 
+If a user wants to schedule surgeries, they must either open an existing project or ask to create a new one using the `project-initializer` skill.
 
-The workbook has four sheets: `HƯỚNG DẪN` (instructions), `INPUT` (all data entry), `TÍNH TOÁN` (compute block), and `OUTPUT` (final schedule). All data entry sections — `INPUT 1` (lịch phòng khám), `INPUT 2` (lịch họp), `INPUT 3` (lịch trực cấp cứu), `INPUT 4` (danh sách bác sĩ), and `INPUT 5` (danh sách bệnh nhân) — live on `INPUT`. `TÍNH TOÁN` holds the formula-driven compute block, and `OUTPUT` holds the final scheduled surgeries. Do not create new workbooks, do not edit other files in the user's filesystem, and do not roam beyond surgery-scheduling concerns.
+The active workbook has four sheets: `HƯỚNG DẪN` (instructions), `INPUT` (all data entry), `TÍNH TOÁN` (compute block), and `OUTPUT` (final schedule). All data entry sections — `INPUT 1` to `INPUT 5` — live on `INPUT`. `TÍNH TOÁN` holds the formula-driven compute block, and `OUTPUT` holds the final scheduled surgeries. Do not edit other files in the user's filesystem, and do not roam beyond surgery-scheduling concerns unless changing scheduling rules.
 
 ## Off-topic policy
 
-If the user's request is not about surgery scheduling for `scheduling-template.xlsx`, **refuse** with the bilingual message defined in `skills/scheduler/prompts/refuse.md` and offer the three scheduling suggestions:
+If the user's request is not about surgery scheduling, **refuse** with the message defined in `skills/clarifier/refuse.md` and offer the scheduling suggestions:
 
 1. Add a new patient (`Thêm bệnh nhân mới`)
 2. Update clinic / meeting / duty / doctor data (`Cập nhật INPUT 1-4`)
 3. Run this week's schedule (`Chạy xếp lịch tuần này`)
+4. Change scheduling rule or add new input (`Cập nhật luật hoặc cấu hình`)
 
 Do not silently retarget the request. Do not engage with general programming, unrelated Excel work, browsing, image generation, or anything outside the scheduler scope.
 
 ## Required write flow
 
-Every mutation of `scheduling-template.xlsx` must follow this sequence:
+Every mutation of an Active Project File must follow this sequence:
 
-1. **Classify** the user input into one of: `add_clinic_schedule`, `add_meeting`, `add_duty`, `add_doctor`, `add_patient`, `run_schedule`, `query`, `off_topic`. See `skills/scheduler/prompts/classify.md`.
-2. **Ask one short clarification** if and only if classification or target row/column is ambiguous.
-3. **Confirm** the interpretation back to the user using `skills/scheduler/prompts/confirm.md` (bilingual: VI + EN). Wait for explicit `Có` / `Yes`.
-4. **Write** via the `excel` MCP server (`@negokaz/excel-mcp-server`) targeting the correct section on `INPUT` (`INPUT 1`..`INPUT 5`). Never write inside `TÍNH TOÁN` or `OUTPUT` — those are formula-driven.
+1. **Classify** the user input into one of: `add_clinic_schedule`, `add_meeting`, `add_duty`, `add_doctor`, `add_patient`, `run_schedule`, `update_rule`, `query`, `off_topic`, `create_project`. See `skills/clarifier/classify.md`.
+2. **Clarify** if the user request is ambiguous. You MUST use the clarification panel format defined in `skills/clarifier/clarify.md` before implementing.
+3. **Confirm** the interpretation back to the user using `skills/data-editor/confirm.md`. Wait for explicit `Có` / `Yes`.
+4. **Write** via the `excel` MCP server (`@negokaz/excel-mcp-server`) targeting the correct section on `INPUT` (`INPUT 1`..`INPUT 5`) of the **Active Project File**. Never write inside `TÍNH TOÁN` or `OUTPUT` — those are formula-driven. 
+   - **Exception for `update_rule`**: If changing rules, you MUST update the Excel formulas in `TÍNH TOÁN` directly using MCP to apply the changes immediately. Then, update `scripts/build_template.py` and the skill/memory files to keep everything in sync.
 5. **Verify** the cell after the write by reading it back, and report the exact change to the user.
 
 ## MCP allow-list
@@ -51,7 +54,7 @@ At the start of every session in this project, read:
 ~/.codex/memories/medmate-scheduler.md
 ```
 
-This file is seeded from `memories/medmate-scheduler.seed.md` by `scripts/install.ps1`. When the user confirms a durable rule change (for example: new doctor, new emergency duty rotation, new meeting block), **append** a dated entry to that memory file. Never overwrite or trim previous entries silently. Note that the daily cap of 11 surgeries is hardcoded into the `TÍNH TOÁN` compute formulas (`M{row}<=11`) and is not configurable from memory.
+This file is seeded from `memories/medmate-scheduler.seed.md` by `scripts/install.ps1`. When the user confirms a durable rule change (for example: new doctor, new emergency duty rotation, new meeting block, or new daily cap/logic), **append** a dated entry to that memory file. Never overwrite or trim previous entries silently. If modifying formulas in Excel for `update_rule`, ensure the new formulas are also saved back into the `build_template.py` script.
 
 ## Language
 

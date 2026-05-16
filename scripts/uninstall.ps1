@@ -181,5 +181,19 @@ if ($RestoreLegacy) {
         Write-Plan "$tmpDir không tồn tại; không có gì để khôi phục."
     }
 }
+Write-Plan "Kiểm tra tính hợp lệ của config.toml (Healthcheck)"
+$configPath = Join-Path $codexHome 'config.toml'
+if (-not $WhatIf) {
+    try {
+        python -c "import sys; import tomli; tomli.load(open(r'$configPath', 'rb'))"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Codex config.toml bị lỗi cấu trúc! Vui lòng khôi phục từ thư mục backup."
+            exit 1
+        }
+        Write-Plan "Healthcheck OK: config.toml hợp lệ."
+    } catch {
+        Write-Plan "Bỏ qua healthcheck do python không khả dụng hoặc thiếu module tomli."
+    }
+}
 
 Write-Host "Đã gỡ cài MedMate Scheduler hoàn tất." -ForegroundColor Green

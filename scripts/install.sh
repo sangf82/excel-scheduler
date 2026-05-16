@@ -311,7 +311,10 @@ if 'plugins' not in data:
 plugins = [p for p in data['plugins'] if p.get('name') != 'medmate-scheduler']
 plugins.append({
     'name': 'medmate-scheduler',
-    'source': project_root,
+    'source': {
+        'source': 'local',
+        'path': project_root
+    },
     'category': 'Productivity',
     'policy': {
         'installation': 'AVAILABLE',
@@ -325,6 +328,35 @@ with open(path, 'w', encoding='utf-8') as f:
 PYEOF
 else
   log_plan "Ghi marketplace.json với entry medmate-scheduler"
+fi
+
+# 3b. Setup ~/.codex/mcp.json (inject excel MCP server)
+MCP_JSON_PATH="${CODEX_HOME}/mcp.json"
+if [[ "$DRY_RUN" != true ]]; then
+  if [[ ! -f "$MCP_JSON_PATH" ]]; then
+    echo '{"mcpServers":{}}' > "$MCP_JSON_PATH"
+  fi
+  python3 - "$MCP_JSON_PATH" << 'PYEOF'
+import json, sys
+path = sys.argv[1]
+try:
+    with open(path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+except Exception:
+    data = {}
+if 'mcpServers' not in data:
+    data['mcpServers'] = {}
+data['mcpServers']['excel'] = {
+    'command': 'npx',
+    'args': ['-y', '@negokaz/excel-mcp-server']
+}
+with open(path, 'w', encoding='utf-8') as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)
+    f.write('\n')
+PYEOF
+  log_plan "Cập nhật mcp.json với excel MCP server"
+else
+  log_plan "Cập nhật mcp.json (dry-run)"
 fi
 
 # 4. Seed memory file

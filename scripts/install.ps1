@@ -293,10 +293,23 @@ $appendBlock = ""
 if ($missingPlugins.Count -gt 0) {
     $appendBlock += ($missingPlugins -join "`n") + "`n"
 }
-$appendBlock += "$beginMarker`n[projects.`"c:\\projects\\medmate\\excel-scheduler`"]`ntrust_level = `"trusted`"`n$endMarker`n"
 
-$separator = if ($newConfig.Length -eq 0 -or $newConfig.EndsWith("`n")) { '' } else { "`n" }
-$newConfig = $newConfig + $separator + "`n" + $appendBlock
+$projectSection = "[projects.`"c:\\projects\\medmate\\excel-scheduler`"]"
+$projectTrustBlock = ""
+if (-not $newConfig.ToLower().Contains($projectSection.ToLower())) {
+    $projectTrustBlock = "$projectSection`ntrust_level = `"trusted`"`n"
+}
+
+if (-not ($newConfig -match '(?m)^mode\s*=')) {
+    $newConfig = "mode = `"planning`"`n" + $newConfig
+} else {
+    $newConfig = $newConfig -replace '(?m)^mode\s*=.*', 'mode = "planning"'
+}
+
+if ($appendBlock.Length -gt 0 -or $projectTrustBlock.Length -gt 0) {
+    $separator = if ($newConfig.Length -eq 0 -or $newConfig.EndsWith("`n")) { '' } else { "`n" }
+    $newConfig = $newConfig + $separator + "`n$beginMarker`n" + $appendBlock + $projectTrustBlock + "$endMarker`n"
+}
 
 Write-Plan "Ghi config.toml (UTF-8, no BOM)"
 Write-TextNoBom $configPath $newConfig
@@ -384,6 +397,37 @@ if (-not $WhatIf) {
     ($marketplace | ConvertTo-Json -Depth 10) | Set-Content -Path $marketplacePath -Encoding UTF8
 }
 
+# 3b. Setup ~/.codex/mcp.json (inject excel MCP server)
+$mcpJsonPath = Join-Path $codexHome 'mcp.json'
+if (-not (Test-Path $mcpJsonPath)) {
+    Write-Plan "Tạo mới mcp.json tại $mcpJsonPath"
+    $mcpData = [ordered]@{ mcpServers = [ordered]@{} }
+} else {
+    try {
+        $mcpData = Get-Content $mcpJsonPath -Raw | ConvertFrom-Json
+    } catch {
+        Write-Warning "mcp.json hiện tại không phải JSON hợp lệ. Tạo lại."
+        if (-not $WhatIf) {
+            Copy-Item $mcpJsonPath "$mcpJsonPath.bak" -Force
+        }
+        $mcpData = [ordered]@{ mcpServers = [ordered]@{} }
+    }
+}
+
+if (-not $mcpData.mcpServers) {
+    $mcpData | Add-Member -NotePropertyName 'mcpServers' -NotePropertyValue [ordered]@{} -Force
+}
+
+$mcpData.mcpServers | Add-Member -NotePropertyName 'excel' -NotePropertyValue ([ordered]@{
+    command = "npx"
+    args = @("-y", "@negokaz/excel-mcp-server")
+}) -Force
+
+Write-Plan "Cập nhật mcp.json với excel MCP server"
+if (-not $WhatIf) {
+    ($mcpData | ConvertTo-Json -Depth 10) | Set-Content -Path $mcpJsonPath -Encoding UTF8
+}
+
 # 4. Seed memory file
 $memorySource = Join-Path $projectRoot 'memories\medmate-scheduler.seed.md'
 $memoryTarget = Join-Path $codexHome  'memories\medmate-scheduler.md'
@@ -434,10 +478,24 @@ $buildScript = Join-Path $projectRoot 'scripts\build_template.py'
 Write-Plan "Chạy build_template.py để tạo lại scheduling-template.xlsx"
 if (-not $WhatIf) {
     # pythonExe already discovered & validated in Test-Dependencies
+    $env:PYTHONIOENCODING = 'utf-8'
     & $script:pythonExe $buildScript
     if ($LASTEXITCODE -ne 0) {
         Write-Error "build_template.py thất bại."
         exit 1
+    }
+}
+Write-Plan "Kiểm tra tính hợp lệ của config.toml (Healthcheck)"
+if (-not $WhatIf) {
+    try {
+        python -c "import sys; import tomli; tomli.load(open(r'$configPath', 'rb'))"
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "Codex config.toml bị lỗi cấu trúc! Vui lòng khôi phục từ thư mục backup."
+            exit 1
+        }
+        Write-Plan "Healthcheck OK: config.toml hợp lệ."
+    } catch {
+        Write-Plan "Bỏ qua healthcheck do python không khả dụng hoặc thiếu module tomli."
     }
 }
 

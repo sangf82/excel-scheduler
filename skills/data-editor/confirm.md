@@ -1,12 +1,16 @@
 # Confirmation prompt
 
-Before any write to `scheduling-template.xlsx`, send the bilingual confirmation below as a single message and wait for explicit `Có` / `Yes`.
+Before any write to `scheduling-template.xlsx`, detect the user's language (Vietnamese or English) and send ONLY the corresponding confirmation below as a single message. Wait for explicit `Có` / `Yes`.
 
 ## Template
 
+If user speaks Vietnamese:
 ```
-VI: Tôi sẽ ghi vào sheet INPUT — {section} dòng {row}: {summary}. Bạn xác nhận? (Có/Không)
-EN: I will write to sheet INPUT — {section} row {row}: {summary}. Confirm? (Yes/No)
+Tôi sẽ ghi vào sheet INPUT — {section} dòng {row}: {summary}. Bạn xác nhận? (Có/Không)
+```
+If user speaks English:
+```
+I will write to sheet INPUT — {section} row {row}: {summary}. Confirm? (Yes/No)
 ```
 
 ## Placeholders
@@ -20,9 +24,13 @@ EN: I will write to sheet INPUT — {section} row {row}: {summary}. Confirm? (Ye
 
 For `run_schedule` (no write — just a recompute / verification), use:
 
+If user speaks Vietnamese:
 ```
-VI: Tôi sẽ mở workbook và đọc lại TÍNH TOÁN + OUTPUT, sau đó báo cáo {summary}. Bạn xác nhận? (Có/Không)
-EN: I will open the workbook and re-read TÍNH TOÁN + OUTPUT, then report {summary}. Confirm? (Yes/No)
+Tôi sẽ mở workbook và đọc lại TÍNH TOÁN + OUTPUT, sau đó báo cáo {summary}. Bạn xác nhận? (Có/Không)
+```
+If user speaks English:
+```
+I will open the workbook and re-read TÍNH TOÁN + OUTPUT, then report {summary}. Confirm? (Yes/No)
 ```
 
 ## Decline handling

@@ -556,7 +556,7 @@ def _build_output(ws):
     ws.row_dimensions[40].height = 24
 
 
-def build() -> Path:
+def build(output_path: Path | None = None) -> Path:
     wb = Workbook()
     ws_guide = wb.active
     ws_guide.title = "HƯỚNG DẪN"
@@ -569,15 +569,26 @@ def build() -> Path:
     _build_tinh_toan(ws_compute)
     _build_output(ws_output)
 
-    if TEMPLATE_PATH.exists():
-        os.remove(TEMPLATE_PATH)
-    wb.save(TEMPLATE_PATH)
-    return TEMPLATE_PATH
+    target_path = output_path if output_path else TEMPLATE_PATH
+    if target_path.exists():
+        try:
+            os.remove(target_path)
+        except OSError:
+            pass
+            
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(target_path)
+    return target_path
 
 
 def main() -> int:
-    path = build()
-    print(f"Built {path.name} with sheets: HƯỚNG DẪN, INPUT, TÍNH TOÁN, OUTPUT")
+    import argparse
+    parser = argparse.ArgumentParser(description="Build MedMate Scheduler Excel template")
+    parser.add_argument("--output", "-o", type=Path, help="Path to save the generated excel file")
+    args = parser.parse_args()
+    
+    path = build(args.output)
+    print(f"Built {path.name} at {path} successfully.")
     return 0
 
 
