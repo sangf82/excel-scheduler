@@ -1,0 +1,17 @@
+{
+  "name": "medmate",
+  "interface": {
+    "displayName": "MedMate Marketplace"
+  },
+  "plugins": [
+    {
+      "name": "medmate-scheduler",
+      "source": "./",
+      "category": "Productivity",
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      }
+    }
+  ]
+}

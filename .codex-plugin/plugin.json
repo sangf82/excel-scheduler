@@ -1,0 +1,38 @@
+{
+  "name": "medmate-scheduler",
+  "version": "26.05.16",
+  "description": "Auto-schedule surgeries into scheduling-template.xlsx (medical domain only).",
+  "author": {
+    "name": "MedMate"
+  },
+  "license": "MIT",
+  "keywords": [
+    "scheduling",
+    "surgery",
+    "medical",
+    "medmate",
+    "excel",
+    "xlsx",
+    "scheduler"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "MedMate Scheduler",
+    "shortDescription": "Auto-schedule surgeries into scheduling-template.xlsx",
+    "longDescription": "MedMate Scheduler operates on scheduling-template.xlsx with four sheets: `INPUT` (data entry for clinic schedule, meetings, emergency duty, doctor roster, patient list), `TÍNH TOÁN` (formula-driven compute block), and `OUTPUT` (final scheduled surgery list). The plugin classifies user input, confirms the target section, writes only to the `INPUT` sheet via the excel MCP, and lets the embedded cross-sheet formulas refresh `TÍNH TOÁN` and `OUTPUT`.",
+    "developerName": "MedMate",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "defaultPrompt": [
+      "Thêm bệnh nhân BN036 tên Nguyễn Văn X loại Ghép gan",
+      "Cập nhật lịch trực ngày 2026-05-20 cho BS02",
+      "Chạy xếp lịch tuần này và xem OUTPUT"
+    ],
+    "brandColor": "#0E7C66"
+  }
+}

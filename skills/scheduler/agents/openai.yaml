@@ -1,0 +1,6 @@
+interface:
+  display_name: "Scheduler"
+  short_description: "Surgery auto-scheduler bound to scheduling-template.xlsx"
+  default_prompt: "Use $scheduler to add data to INPUT 1-5 on the INPUT sheet, or re-read TÍNH TOÁN and OUTPUT of scheduling-template.xlsx. Refuse off-topic requests."
+policy:
+  allow_implicit_invocation: true
