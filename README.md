@@ -34,14 +34,12 @@ MedMate Scheduler là một Codex plugin tự động xếp lịch phẫu thuậ
 
 **Windows (PowerShell):**
 ```powershell
-powershell.exe -File .\scripts\install.ps1
+irm https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.ps1 | iex
 ```
-> PowerShell 7+: `pwsh -File .\scripts\install.ps1`
 
 **macOS (Terminal):**
 ```bash
-chmod +x ./scripts/install.sh
-./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.sh | bash
 ```
 
 ### Hướng dẫn sử dụng
@@ -85,13 +83,12 @@ The plugin is broken down into 4 specialized skills:
 
 **Windows (PowerShell):**
 ```powershell
-powershell.exe -File .\scripts\install.ps1
+irm https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.ps1 | iex
 ```
 
 **macOS (Terminal):**
 ```bash
-chmod +x ./scripts/install.sh
-./scripts/install.sh
+curl -fsSL https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.sh | bash
 ```
 
 ### Usage Workflow
