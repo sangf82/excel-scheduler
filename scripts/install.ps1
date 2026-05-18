@@ -19,13 +19,13 @@ if (-not $PSScriptRoot) {
     }
 
     # Suppress stderr progress output; git writes progress to stderr even on success.
-    # Temporarily ignore errors because $ErrorActionPreference = 'Stop' would treat
-    # stderr as a terminating exception.
-    $prevEAP = $ErrorActionPreference
-    $ErrorActionPreference = 'SilentlyContinue'
-    cmd /c "git clone `"$repoUrl`" `"$cloneDir`" 2>nul"
-    $gitExit = $LASTEXITCODE
-    $ErrorActionPreference = $prevEAP
+    # Run in a child scope with $ErrorActionPreference = 'Continue' so stderr does not
+    # throw a terminating exception under the script-wide 'Stop' setting.
+    $gitExit = & {
+        $ErrorActionPreference = 'Continue'
+        git clone $repoUrl $cloneDir 2>&1 | Out-Null
+        $LASTEXITCODE
+    }
 
     if ($gitExit -ne 0) {
         Write-Host ""

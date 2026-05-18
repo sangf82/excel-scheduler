@@ -24,7 +24,7 @@ if [[ "${SCRIPT_DIR}" == "$(pwd)" ]] || [[ ! -f "${SCRIPT_DIR}/install.sh" ]]; t
         exit 1
     fi
 
-    if ! git clone "${REPO_URL}" "${CLONE_DIR}" 2>/dev/null; then
+    if ! git clone "${REPO_URL}" "${CLONE_DIR}" >/dev/null 2>&1; then
         echo ""
         echo "=== LỖI: Không thể clone repository ===" >&2
         echo "Repository có thể là PRIVATE và bạn chưa cấu hình xác thực git." >&2
