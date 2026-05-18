@@ -33,17 +33,64 @@ jobs:
             exit 1
           fi
 
-      - name: Auth gh CLI with Gist PAT
+      - name: Sync install.ps1 to Gist via GitHub API
+        env:
+          GIST_PAT: ${{ secrets.GIST_PAT }}
+          GIST_ID: ${{ secrets.GIST_ID_PS1 }}
         run: |
-          echo "${{ secrets.GIST_PAT }}" | gh auth login --with-token
-          gh auth status
+          python3 << 'PYEOF'
+          import json, os, urllib.request
+          gist_id = os.environ['GIST_ID']
+          pat = os.environ['GIST_PAT']
+          with open('scripts/install.ps1', 'r', encoding='utf-8') as f:
+              content = f.read()
+          payload = json.dumps({"files": {"install.ps1": {"content": content}}}).encode('utf-8')
+          req = urllib.request.Request(
+              f'https://api.github.com/gists/{gist_id}',
+              data=payload,
+              headers={
+                  'Authorization': f'token {pat}',
+                  'Accept': 'application/vnd.github.v3+json',
+                  'Content-Type': 'application/json',
+              },
+              method='PATCH'
+          )
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  print(f"install.ps1 synced. HTTP {resp.status}")
+          except urllib.error.HTTPError as e:
+              print(f"Error: HTTP {e.code}")
+              print(e.read().decode())
+              exit(1)
+          PYEOF
 
-      - name: Sync install.ps1 to Gist
+      - name: Sync install.sh to Gist via GitHub API
+        env:
+          GIST_PAT: ${{ secrets.GIST_PAT }}
+          GIST_ID: ${{ secrets.GIST_ID_SH }}
         run: |
-          gh gist edit "${{ secrets.GIST_ID_PS1 }}" scripts/install.ps1
-          echo "install.ps1 synced successfully."
-
-      - name: Sync install.sh to Gist
-        run: |
-          gh gist edit "${{ secrets.GIST_ID_SH }}" scripts/install.sh
-          echo "install.sh synced successfully."
+          python3 << 'PYEOF'
+          import json, os, urllib.request
+          gist_id = os.environ['GIST_ID']
+          pat = os.environ['GIST_PAT']
+          with open('scripts/install.sh', 'r', encoding='utf-8') as f:
+              content = f.read()
+          payload = json.dumps({"files": {"install.sh": {"content": content}}}).encode('utf-8')
+          req = urllib.request.Request(
+              f'https://api.github.com/gists/{gist_id}',
+              data=payload,
+              headers={
+                  'Authorization': f'token {pat}',
+                  'Accept': 'application/vnd.github.v3+json',
+                  'Content-Type': 'application/json',
+              },
+              method='PATCH'
+          )
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  print(f"install.sh synced. HTTP {resp.status}")
+          except urllib.error.HTTPError as e:
+              print(f"Error: HTTP {e.code}")
+              print(e.read().decode())
+              exit(1)
+          PYEOF
