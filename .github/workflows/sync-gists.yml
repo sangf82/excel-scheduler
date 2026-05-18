@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/install.ps1'
       - 'scripts/install.sh'
+      - '.github/workflows/sync-gists.yml'
 
   workflow_dispatch:
 
