@@ -30,16 +30,52 @@ MedMate Scheduler là một Codex plugin tự động xếp lịch phẫu thuậ
 - **Node.js 16+** — cần để `npx` chạy `excel-mcp-server`.
   - Windows/macOS: https://nodejs.org/ (chọn LTS)
 
-### Cài đặt (1 dòng lệnh)
+### Cài đặt
+
+#### Cách 1: Cài từ thư mục hiện tại (Local install)
+Chạy trực tiếp file trong thư mục `scripts/`:
+
+**Cài đặt — Windows:**
+```powershell
+.\scripts\install.ps1
+```
+Hoặc xem trước:
+```powershell
+.\scripts\install.ps1 -WhatIf
+```
+
+**Cài đặt — macOS:**
+```bash
+./scripts/install.sh
+```
+Hoặc xem trước:
+```bash
+./scripts/install.sh --dry-run
+```
+
+**Gỡ cài đặt — Windows:**
+```powershell
+.\scripts\uninstall.ps1
+```
+
+**Gỡ cài đặt — macOS:**
+```bash
+./scripts/uninstall.sh
+```
+
+#### Cách 2: Cài từ xa (Remote install — chỉ 1 dòng lệnh)
+> **Lưu ý:** Nếu repo là private, bạn cần để script công khai qua GitHub Gist (xem phần [FAQ](#faq-private-repo) bên dưới).
+
+Copy & paste toàn bộ dòng lệnh bên dưới vào terminal (thay `[your-username]` và `[gist-id]` bằng giá trị thật sau khi chạy `setup_gists.py`):
 
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.ps1 | iex
+irm https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.ps1 | iex
 ```
 
 **macOS (Terminal):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.sh | bash
+curl -fsSL https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.sh | bash
 ```
 
 ### Hướng dẫn sử dụng
@@ -50,9 +86,37 @@ curl -fsSL https://raw.githubusercontent.com/sangf82/excel-scheduler/main/script
    - `Cập nhật lịch trực ngày 2026-05-20 cho BS02`
 4. Cập nhật luật (nếu cần): `Đổi luật ghép gan tối đa 1 ca một ngày`
 
-### Gỡ cài đặt
-**Windows:** `powershell.exe -File .\scripts\uninstall.ps1`
-**macOS:** `./scripts/uninstall.sh`
+---
+
+## Hỏi đáp (FAQ)
+
+### Làm sao để repo private nhưng script cài đặt vẫn public? {#faq-private-repo}
+
+GitHub không cho phép trộn file public và private trong cùng một repository. Khi repo đã private, các URL `raw.githubusercontent.com` yêu cầu xác thực. Giải pháp khuyên dùng là **đăng script cài đặt lên GitHub Gist**, vì Gist có thể để public ngay cả khi repo chính là private.
+
+**Cách 1: Tự động (Khuyên dùng)**
+
+Chạy script thiết lập một lần, sau đó GitHub Actions sẽ tự động đồng bộ khi bạn push thay đổi:
+
+```bash
+python scripts/setup_gists.py
+```
+
+Script sẽ:
+1. Yêu cầu GitHub Personal Access Token (PAT) với quyền `gist`.
+2. Tạo 2 Gist public cho `install.ps1` và `install.sh`.
+3. In ra **Gist ID** và URL raw để bạn chèn vào README.
+4. Hướng dẫn thêm 3 secrets vào repository (`GIST_PAT`, `GIST_ID_PS1`, `GIST_ID_SH).
+
+Sau khi secrets được lưu, mỗi lần push thay đổi `install.ps1` hoặc `install.sh` lên nhánh `main`, workflow `.github/workflows/sync-gists.yml` sẽ tự động cập nhật Gist.
+
+**Cách 2: Thủ công (Dự phòng)**
+
+1. Truy cập [gist.github.com](https://gist.github.com)
+2. Tạo Gist mới tên `install.ps1`, dán nội dung file, để **Public**.
+3. Tạo Gist khác tên `install.sh`, dán nội dung file, để **Public**.
+4. Lấy URL raw (nhấn nút "Raw") và cập nhật README.
+5. Chuyển repo chính sang private (Settings → Change repository visibility → Private).
 
 ---
 
@@ -81,14 +145,50 @@ The plugin is broken down into 4 specialized skills:
 
 ### Installation
 
+#### Option 1: Install from current directory (Local install)
+Run the scripts directly from the `scripts/` folder:
+
+**Install — Windows:**
+```powershell
+.\scripts\install.ps1
+```
+Or preview mode (dry-run):
+```powershell
+.\scripts\install.ps1 -WhatIf
+```
+
+**Install — macOS:**
+```bash
+./scripts/install.sh
+```
+Or preview mode (dry-run):
+```bash
+./scripts/install.sh --dry-run
+```
+
+**Uninstall — Windows:**
+```powershell
+.\scripts\uninstall.ps1
+```
+
+**Uninstall — macOS:**
+```bash
+./scripts/uninstall.sh
+```
+
+#### Option 2: Remote install (One-liner)
+> **Note:** If the repository is private, you need to host the install script publicly via GitHub Gist (see [FAQ](#faq-private-repo) below).
+
+Copy & paste the entire line below into your terminal (replace `[your-username]` and `[gist-id]` with real values after running `setup_gists.py`):
+
 **Windows (PowerShell):**
 ```powershell
-irm https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.ps1 | iex
+irm https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.ps1 | iex
 ```
 
 **macOS (Terminal):**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/sangf82/excel-scheduler/main/scripts/install.sh | bash
+curl -fsSL https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.sh | bash
 ```
 
 ### Usage Workflow
@@ -99,6 +199,34 @@ curl -fsSL https://raw.githubusercontent.com/sangf82/excel-scheduler/main/script
    - `Update emergency duty 2026-05-20 to BS02`
 4. Update rules (if needed): `Change the rule so Ghép gan is limited to 1 per day`
 
-### Uninstall
-**Windows:** `powershell.exe -File .\scripts\uninstall.ps1`
-**macOS:** `./scripts/uninstall.sh`
+---
+
+## FAQ
+
+### How do I make the repository private but keep the install script public? {#faq-private-repo}
+
+GitHub does not allow mixing public and private files inside the same repository. Once a repo is private, `raw.githubusercontent.com` URLs require authentication. The recommended solution is to **host the install scripts on GitHub Gist**, which can remain public even when your main repo is private.
+
+**Option 1: Automated (Recommended)**
+
+Run the setup script once; GitHub Actions will auto-sync on every push:
+
+```bash
+python scripts/setup_gists.py
+```
+
+The script will:
+1. Ask for a GitHub Personal Access Token (PAT) with `gist` scope.
+2. Create two public Gists for `install.ps1` and `install.sh`.
+3. Print the **Gist IDs** and raw URLs for you to paste into the README.
+4. Instruct you to add three repository secrets (`GIST_PAT`, `GIST_ID_PS1`, `GIST_ID_SH`).
+
+Once the secrets are saved, every push that changes `install.ps1` or `install.sh` on `main` will trigger `.github/workflows/sync-gists.yml` to update the Gists automatically.
+
+**Option 2: Manual (Fallback)**
+
+1. Go to [gist.github.com](https://gist.github.com)
+2. Create a public Gist named `install.ps1`, paste the file content, and set it to **Public**.
+3. Create another public Gist named `install.sh`, paste the file content, and set it to **Public**.
+4. Click "Raw" to get the raw URLs and update your README.
+5. Make the main repository private (Settings → Change repository visibility → Private).

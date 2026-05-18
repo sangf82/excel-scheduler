@@ -1,0 +1,49 @@
+name: Sync Install Scripts to Public Gists
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/install.ps1'
+      - 'scripts/install.sh'
+
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check secrets
+        run: |
+          missing=""
+          if [ -z "${{ secrets.GIST_PAT }}" ]; then
+            missing="$missing GIST_PAT"
+          fi
+          if [ -z "${{ secrets.GIST_ID_PS1 }}" ]; then
+            missing="$missing GIST_ID_PS1"
+          fi
+          if [ -z "${{ secrets.GIST_ID_SH }}" ]; then
+            missing="$missing GIST_ID_SH"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::error::Missing secrets:$missing. Run scripts/setup_gists.py locally to create gists, then add the IDs and a PAT with 'gist' scope to Settings -> Secrets."
+            exit 1
+          fi
+
+      - name: Auth gh CLI with Gist PAT
+        run: |
+          echo "${{ secrets.GIST_PAT }}" | gh auth login --with-token
+          gh auth status
+
+      - name: Sync install.ps1 to Gist
+        run: |
+          gh gist edit "${{ secrets.GIST_ID_PS1 }}" scripts/install.ps1
+          echo "install.ps1 synced successfully."
+
+      - name: Sync install.sh to Gist
+        run: |
+          gh gist edit "${{ secrets.GIST_ID_SH }}" scripts/install.sh
+          echo "install.sh synced successfully."
