@@ -1,4 +1,4 @@
-# MedMate Scheduler — Windows Installer (auto-synced to GitHub Gist)
+﻿# MedMate Scheduler — Windows Installer (auto-synced to GitHub Gist)
 param(
     [switch]$WhatIf
 )
