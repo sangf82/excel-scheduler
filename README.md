@@ -64,18 +64,18 @@ Hoặc xem trước:
 ```
 
 #### Cách 2: Cài từ xa (Remote install — chỉ 1 dòng lệnh)
-> **Lưu ý:** Nếu repo là private, bạn cần để script công khai qua GitHub Gist (xem phần [FAQ](#faq-private-repo) bên dưới).
+> **Lưu ý:** Script cài đặt được đăng công khai qua GitHub Gist để repo chính có thể private ([FAQ](#faq-private-repo)).
 
-Copy & paste toàn bộ dòng lệnh bên dưới vào terminal (thay `[your-username]` và `[gist-id]` bằng giá trị thật sau khi chạy `setup_gists.py`):
+Copy & paste toàn bộ dòng lệnh bên dưới vào terminal:
 
 **Windows (PowerShell):**
 ```powershell
-irm https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.ps1 | iex
+irm https://gist.githubusercontent.com/sangf82/b525826d1ea025b0a9cb2c8d6c411be5/raw/install.ps1 | iex
 ```
 
 **macOS (Terminal):**
 ```bash
-curl -fsSL https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.sh | bash
+curl -fsSL https://gist.githubusercontent.com/sangf82/6da3aa22ef7062120157da8545148e8e/raw/install.sh | bash
 ```
 
 ### Hướng dẫn sử dụng
@@ -177,18 +177,18 @@ Or preview mode (dry-run):
 ```
 
 #### Option 2: Remote install (One-liner)
-> **Note:** If the repository is private, you need to host the install script publicly via GitHub Gist (see [FAQ](#faq-private-repo) below).
+> **Note:** Install scripts are hosted publicly on GitHub Gist so the main repo can stay private ([FAQ](#faq-private-repo)).
 
-Copy & paste the entire line below into your terminal (replace `[your-username]` and `[gist-id]` with real values after running `setup_gists.py`):
+Copy & paste the entire line below into your terminal:
 
 **Windows (PowerShell):**
 ```powershell
-irm https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.ps1 | iex
+irm https://gist.githubusercontent.com/sangf82/b525826d1ea025b0a9cb2c8d6c411be5/raw/install.ps1 | iex
 ```
 
 **macOS (Terminal):**
 ```bash
-curl -fsSL https://gist.githubusercontent.com/[your-username]/[gist-id]/raw/install.sh | bash
+curl -fsSL https://gist.githubusercontent.com/sangf82/6da3aa22ef7062120157da8545148e8e/raw/install.sh | bash
 ```
 
 ### Usage Workflow
