@@ -535,7 +535,7 @@ if (Test-Path $projectExcel) {
 }
 
 # 7. Build the workbook
-$buildScript = Join-Path $projectRoot 'scripts\build_template.py'
+$buildScript = Join-Path $projectRoot 'excel-template\build_template.py'
 Write-Plan "Chạy build_template.py để tạo lại scheduling-template.xlsx"
 if (-not $WhatIf) {
     # pythonExe already discovered & validated in Test-Dependencies

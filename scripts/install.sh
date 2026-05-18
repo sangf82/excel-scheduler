@@ -449,7 +449,7 @@ else
 fi
 
 # 7. Build the workbook
-BUILD_SCRIPT="${PROJECT_ROOT}/scripts/build_template.py"
+BUILD_SCRIPT="${PROJECT_ROOT}/excel-template/build_template.py"
 log_plan "Chạy build_template.py để tạo lại scheduling-template.xlsx"
 if [[ "$DRY_RUN" != true ]]; then
   # PYTHON_EXE already discovered & validated in check_dependencies
