@@ -25,8 +25,27 @@ if [[ "${SCRIPT_DIR}" == "$(pwd)" ]] || [[ ! -f "${SCRIPT_DIR}/install.sh" ]]; t
     fi
 
     if ! git clone "${REPO_URL}" "${CLONE_DIR}" 2>/dev/null; then
-        echo "Error: Failed to clone repository." >&2
-        echo "If this is a private repo, ensure your git credentials are configured." >&2
+        echo ""
+        echo "=== LỖI: Không thể clone repository ===" >&2
+        echo "Repository có thể là PRIVATE và bạn chưa cấu hình xác thực git." >&2
+        echo "" >&2
+        echo "Các giải pháp:" >&2
+        echo "  1. Chuyển repository sang PUBLIC trên GitHub (Settings → Danger Zone → Change visibility)." >&2
+        echo "  2. Hoặc clone thủ công bằng tài khoản có quyền truy cập:" >&2
+        echo "       git clone ${REPO_URL}" >&2
+        echo "     Sau đó chạy script cài đặt từ thư mục đã clone:" >&2
+        echo "       ./scripts/install.sh" >&2
+        echo "" >&2
+        echo "=== ERROR: Failed to clone repository ===" >&2
+        echo "The repository may be PRIVATE and your git credentials are not configured." >&2
+        echo "" >&2
+        echo "Solutions:" >&2
+        echo "  1. Make the repository PUBLIC on GitHub." >&2
+        echo "  2. Or clone manually with an authorized account:" >&2
+        echo "       git clone ${REPO_URL}" >&2
+        echo "     Then run the local install script:" >&2
+        echo "       ./scripts/install.sh" >&2
+        echo ""
         exit 1
     fi
 

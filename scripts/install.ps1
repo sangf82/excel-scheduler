@@ -18,9 +18,37 @@ if (-not $PSScriptRoot) {
         exit 1
     }
 
-    git clone $repoUrl $cloneDir 2>$null
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "Failed to clone repository. If this is a private repo, ensure your git credentials are configured.`nAlternatively, clone manually:`n  git clone $repoUrl"
+    # Suppress stderr progress output; git writes progress to stderr even on success.
+    # Temporarily ignore errors because $ErrorActionPreference = 'Stop' would treat
+    # stderr as a terminating exception.
+    $prevEAP = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    cmd /c "git clone `"$repoUrl`" `"$cloneDir`" 2>nul"
+    $gitExit = $LASTEXITCODE
+    $ErrorActionPreference = $prevEAP
+
+    if ($gitExit -ne 0) {
+        Write-Host ""
+        Write-Host "=== LỖI: Không thể clone repository ===" -ForegroundColor Red
+        Write-Host "Repository có thể là PRIVATE và bạn chưa cấu hình xác thực git." -ForegroundColor Red
+        Write-Host "" -ForegroundColor Yellow
+        Write-Host "Các giải pháp:" -ForegroundColor Yellow
+        Write-Host "  1. Chuyển repository sang PUBLIC trên GitHub (Settings → Danger Zone → Change visibility)." -ForegroundColor Yellow
+        Write-Host "  2. Hoặc clone thủ công bằng tài khoản có quyền truy cập:" -ForegroundColor Yellow
+        Write-Host "       git clone $repoUrl" -ForegroundColor Yellow
+        Write-Host "     Sau đó chạy script cài đặt từ thư mục đã clone:" -ForegroundColor Yellow
+        Write-Host "       .\scripts\install.ps1" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "=== ERROR: Failed to clone repository ===" -ForegroundColor Red
+        Write-Host "The repository may be PRIVATE and your git credentials are not configured." -ForegroundColor Red
+        Write-Host "" -ForegroundColor Yellow
+        Write-Host "Solutions:" -ForegroundColor Yellow
+        Write-Host "  1. Make the repository PUBLIC on GitHub." -ForegroundColor Yellow
+        Write-Host "  2. Or clone manually with an authorized account:" -ForegroundColor Yellow
+        Write-Host "       git clone $repoUrl" -ForegroundColor Yellow
+        Write-Host "     Then run the local install script:" -ForegroundColor Yellow
+        Write-Host "       .\scripts\install.ps1" -ForegroundColor Yellow
+        Write-Host ""
         exit 1
     }
 
