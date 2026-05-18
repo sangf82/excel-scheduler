@@ -1,6 +1,6 @@
 # MedMate Scheduler
 
-Auto-schedule surgeries into isolated Excel project files — medical domain only.
+> Auto-schedule surgeries into isolated Excel project files — medical domain only.
 
 ---
 
