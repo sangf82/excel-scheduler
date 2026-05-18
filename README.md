@@ -64,7 +64,7 @@ Hoặc xem trước:
 ```
 
 #### Cách 2: Cài từ xa (Remote install — chỉ 1 dòng lệnh)
-> **Lưu ý:** Script cài đặt được đăng công khai qua GitHub Gist để repo chính có thể private ([FAQ](#faq-private-repo)). Cần có **Git** để remote install tự động clone repo về trước khi chạy.
+> **Lưu ý:** Chỉ hoạt động khi repository là **PUBLIC** hoặc bạn đã cấu hình git credential có quyền truy cập repo. Nếu repo **PRIVATE**, hãy dùng [Cách 1](#cách-1-cài-từ-thư-mục-hiện-tại-local-install) ở trên.
 
 Copy & paste toàn bộ dòng lệnh bên dưới vào terminal:
 
@@ -93,6 +93,8 @@ curl -fsSL https://gist.githubusercontent.com/sangf82/6da3aa22ef7062120157da8545
 ### Làm sao để repo private nhưng script cài đặt vẫn public? {#faq-private-repo}
 
 GitHub không cho phép trộn file public và private trong cùng một repository. Khi repo đã private, các URL `raw.githubusercontent.com` yêu cầu xác thực. Giải pháp khuyên dùng là **đăng script cài đặt lên GitHub Gist**, vì Gist có thể để public ngay cả khi repo chính là private.
+
+> **Quan trọng:** Khi repo là **PRIVATE**, lệnh cài từ xa (`irm ... | iex` / `curl ... | bash) **sẽ không chạy được** vì script cần `git clone` repo để lấy file cấu hình (`build_template.py`, `AGENTS.md`, ...). Người dùng bình thường không có quyền truy cập repo private. Với repo private, chỉ có **cài đặt từ thư mục cục bộ** (local install) là khả thi.
 
 **Cách 1: Tự động (Khuyên dùng)**
 
@@ -177,7 +179,7 @@ Or preview mode (dry-run):
 ```
 
 #### Option 2: Remote install (One-liner)
-> **Note:** Install scripts are hosted publicly on GitHub Gist so the main repo can stay private ([FAQ](#faq-private-repo)). **Git** is required for remote install so the script can clone the repo first.
+> **Note:** Only works when the repository is **PUBLIC** or you have git credentials configured with access to the repo. If the repo is **PRIVATE**, use [Option 1](#option-1-install-from-current-directory-local-install) above.
 
 Copy & paste the entire line below into your terminal:
 
@@ -206,6 +208,8 @@ curl -fsSL https://gist.githubusercontent.com/sangf82/6da3aa22ef7062120157da8545
 ### How do I make the repository private but keep the install script public? {#faq-private-repo}
 
 GitHub does not allow mixing public and private files inside the same repository. Once a repo is private, `raw.githubusercontent.com` URLs require authentication. The recommended solution is to **host the install scripts on GitHub Gist**, which can remain public even when your main repo is private.
+
+> **Important:** When the repo is **PRIVATE**, the remote one-liner (`irm ... | iex` / `curl ... | bash`) **will not work** because the script needs to `git clone` the repo to access configuration files (`build_template.py`, `AGENTS.md`, ...). Regular users won't have access to a private repo. With a private repo, only **local install** is viable.
 
 **Option 1: Automated (Recommended)**
 
