@@ -64,7 +64,7 @@ Hoặc xem trước:
 ```
 
 #### Cách 2: Cài từ xa (Remote install — chỉ 1 dòng lệnh)
-> **Lưu ý:** Script cài đặt được đăng công khai qua GitHub Gist để repo chính có thể private ([FAQ](#faq-private-repo)).
+> **Lưu ý:** Script cài đặt được đăng công khai qua GitHub Gist để repo chính có thể private ([FAQ](#faq-private-repo)). Cần có **Git** để remote install tự động clone repo về trước khi chạy.
 
 Copy & paste toàn bộ dòng lệnh bên dưới vào terminal:
 
@@ -177,7 +177,7 @@ Or preview mode (dry-run):
 ```
 
 #### Option 2: Remote install (One-liner)
-> **Note:** Install scripts are hosted publicly on GitHub Gist so the main repo can stay private ([FAQ](#faq-private-repo)).
+> **Note:** Install scripts are hosted publicly on GitHub Gist so the main repo can stay private ([FAQ](#faq-private-repo)). **Git** is required for remote install so the script can clone the repo first.
 
 Copy & paste the entire line below into your terminal:
 

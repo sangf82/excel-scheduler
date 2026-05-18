@@ -6,7 +6,39 @@ $ErrorActionPreference = 'Stop'
 chcp 65001 > $null
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
+# Handle remote execution (irm ... | iex) — $PSScriptRoot is empty
+if (-not $PSScriptRoot) {
+    Write-Host "Detected remote execution. Cloning repository first..." -ForegroundColor Cyan
+    $repoUrl = 'https://github.com/sangf82/excel-scheduler.git'
+    $cloneDir = Join-Path $env:TEMP "medmate-scheduler-$(Get-Random)"
+
+    if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
+        Write-Error "Git is required for remote install. Please install git or clone the repo manually:`n  git clone $repoUrl`nThen run .\scripts\install.ps1 from the cloned folder."
+        exit 1
+    }
+
+    git clone $repoUrl $cloneDir 2>$null
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to clone repository. If this is a private repo, ensure your git credentials are configured.`nAlternatively, clone manually:`n  git clone $repoUrl"
+        exit 1
+    }
+
+    Write-Host "Repository cloned to $cloneDir" -ForegroundColor Green
+    $invokeArgs = @{}
+    if ($WhatIf) { $invokeArgs['WhatIf'] = $true }
+    & (Join-Path $cloneDir 'scripts\install.ps1') @invokeArgs
+    exit $LASTEXITCODE
+}
+
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+
+# Validate we are in the correct repository
+$repoMarker = Join-Path $projectRoot 'AGENTS.md'
+if (-not (Test-Path $repoMarker)) {
+    Write-Error "This script must be run from the MedMate Scheduler repository.`nPlease clone the repo and run .\scripts\install.ps1 from the project root.`n  git clone https://github.com/sangf82/excel-scheduler.git"
+    exit 1
+}
+
 $codexHome   = Join-Path $env:USERPROFILE '.codex'
 $agentsHome  = Join-Path $env:USERPROFILE '.agents'
 

@@ -10,6 +10,30 @@ while [[ $# -gt 0 ]]; do
 done
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Handle remote execution (curl ... | bash) — SCRIPT_DIR will be the current working directory
+if [[ "${SCRIPT_DIR}" == "$(pwd)" ]] || [[ ! -f "${SCRIPT_DIR}/install.sh" ]]; then
+    echo "Detected remote execution. Cloning repository first..."
+    REPO_URL='https://github.com/sangf82/excel-scheduler.git'
+    CLONE_DIR="${TMPDIR:-/tmp}/medmate-scheduler-$$"
+
+    if ! command -v git &>/dev/null; then
+        echo "Error: Git is required for remote install." >&2
+        echo "Please install git or clone the repo manually:" >&2
+        echo "  git clone ${REPO_URL}" >&2
+        exit 1
+    fi
+
+    if ! git clone "${REPO_URL}" "${CLONE_DIR}" 2>/dev/null; then
+        echo "Error: Failed to clone repository." >&2
+        echo "If this is a private repo, ensure your git credentials are configured." >&2
+        exit 1
+    fi
+
+    echo "Repository cloned to ${CLONE_DIR}"
+    exec "${CLONE_DIR}/scripts/install.sh" "$@"
+fi
+
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 CODEX_HOME="${HOME}/.codex"
 AGENTS_HOME="${HOME}/.agents"
